@@ -1,9 +1,29 @@
+const { file } = require('zod');
 const db = require('../db/db');
 const ApiError = require('../utils/ApiError');
 
-async function findAll() {
+async function findAll({ cargo, sort } = {}) {
     try {
-        return await db('agentes').select('*').orderBy('id', 'asc');    
+        const query = db('agentes').select('*');
+        
+        if(cargo) {
+            query.where('cargo', cargo);
+        }
+
+        if(sort) {
+            let direction = 'asc';
+
+            if(sort.startsWith('-')) {
+                direction = 'desc';
+            }
+
+            query.orderBy('dataDeIncorporacao', direction);
+        }
+        else {
+            query.orderBy('id', 'asc');
+        }
+
+        return await query;
     } 
     catch (error) {
         throw new ApiError('Erro ao buscar agentes.', 500);
@@ -12,7 +32,7 @@ async function findAll() {
 
 async function findById(id) {
     try {
-        return await db('agentes').where({ id });
+        return await db('agentes').where({ id }).first();
     } 
     catch (error) {
         throw new ApiError('Erro ao buscar agente.', 500)

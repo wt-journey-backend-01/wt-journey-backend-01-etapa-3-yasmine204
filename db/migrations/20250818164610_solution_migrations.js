@@ -12,7 +12,7 @@ exports.up = function(knex) {
         })
         .createTable('casos', table => {
             table.increments('id');
-            table.string('titulo'),
+            table.string('titulo');
             table.string('descricao');
             table.enu('status', ['aberto', 'solucionado']);
             table.integer('agente_id')

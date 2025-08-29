@@ -3,7 +3,17 @@ const ApiError = require('../utils/ApiError');
 
 async function findAll({ agente_id, status } = {}) {
     try {
-        return await db('casos').select('*').orderBy('id', 'asc');    
+        const query = db('casos').select('*').orderBy('id', 'asc');
+
+        if(agente_id) {
+            query.where('agente_id', agente_id);
+        }  
+        
+        if(status) {
+            query.where('status', 'ilike', status);
+        }
+
+        return await query;
     } 
     catch (error) {
         throw new ApiError('Erro ao buscar casos.', 500);
@@ -12,7 +22,7 @@ async function findAll({ agente_id, status } = {}) {
 
 async function findById(id) {
     try {
-        return await db('casos').where({ id });
+        return await db('casos').where({ id }).first();
     } 
     catch (error) {
         throw new ApiError('Erro ao buscar caso.', 500);

@@ -5,28 +5,9 @@ const formatZodError = require('../utils/formatZodError');
 
 const getAgentes = async (req, res, next) => {
     try {
-        let agentes = await repository.findAll();
         const { cargo, sort } = req.query;
 
-        if(cargo) {
-            agentes = agentes.filter(agente => 
-                agente.cargo.toLowerCase() === cargo.toLowerCase());
-        }
-
-        if(sort) {
-            const sortClean = sort.replace(/\s+/g, '');
-            const decreasing = sortClean.startsWith('-');
-            const field = decreasing ? sortClean.slice(1) : sortClean;
-
-            if(field === 'dataDeIncorporacao') {
-                agentes = [...agentes].sort((a, b) => {
-                    const dateA = new Date(a.dataDeIncorporacao).getTime();
-                    const dateB = new Date(b.dataDeIncorporacao).getTime();
-
-                    return decreasing ? dateB - dateA : dateA - dateB;
-                });
-            }
-        }
+        const agentes = await repository.findAll({ cargo, sort });
 
         res.status(200).json(agentes);
     } 

@@ -7,16 +7,9 @@ const normalizeText = require('../utils/normalizeText');
 
 const getCasos = async (req, res, next) => {
     try {
-        let casos = await casosRepository.findAll();
         const { agente_id, status } = req.query;
-       
-        if(agente_id) {
-            casos = casos.filter((caso) => caso.agente_id === Number(agente_id));
-        }
 
-        if(status) {
-            casos = casos.filter((caso) => caso.status.toLowerCase() === status.toLowerCase());
-        }
+        const casos = await casosRepository.findAll({ agente_id, status });
 
         res.status(200).json(casos);
     }
