@@ -1,6 +1,7 @@
 const repository = require('../repositories/agentesRepository');
 const { agentesSchema } = require('../utils/agentesValidation');
-const { AppError } = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
+const formatZodError = require('../utils/formatZodError');
 
 const getAgentes = async (req, res, next) => {
     try {
@@ -11,7 +12,7 @@ const getAgentes = async (req, res, next) => {
         res.status(200).json(agentes);
     } 
     catch (error) {
-        next(error);
+        return next(new ApiError(error.message, 400));
     }
 };
 
@@ -22,13 +23,13 @@ const getAgenteById = async (req, res, next) => {
         const agente = await repository.findById(id);
 
         if(!agente) {
-            throw new AppError(404, 'Agente não encontrado.');
+            return next(new ApiError('Agente não encontrado.', 404));
         }
 
         res.status(200).json(agente);
     } 
     catch (error) {
-        next(error);
+        return next(new ApiError(error.message, 400));
     }
 };
 
@@ -49,7 +50,9 @@ const createAgente = async (req, res, next) => {
 
     } 
     catch (error) {
-        next(error);
+        if(formatZodError(error, next)) return;
+
+        return next(new ApiError(error.message));
     }
 };
 
@@ -61,13 +64,15 @@ const updateCompletelyAgente = async (req, res, next) => {
         const updated = await repository.update(id, data);
 
         if(!updated) {
-            throw new AppError(404, 'Agente não encontrado.');
+            return next(new ApiError('Agente não encontrado', 404));
         }
 
         res.status(200).json(updated);
     } 
     catch (error) {
-        next(error);
+        if(formatZodError(error, next)) return;
+
+        return next(new ApiError(error.message));
     }
 };
 
@@ -79,13 +84,15 @@ const partiallyUpdateAgente = async (req, res, next) => {
         const updated = await repository.update(id, partiallyData);
 
         if (!updated) {
-            throw new AppError(404, 'Agente não encontrado.');
+            return next(new ApiError('Agente não encontrado.', 404));
         }
 
         res.status(200).json(updated);
     } 
     catch (error) {
-        next(error);
+        if(formatZodError(error, next)) return;
+
+        return next(new ApiError(error.message));
     }
 };
 
@@ -96,13 +103,13 @@ const deleteAgente = async (req, res, next) => {
             const deleted = await repository.remove(id);
     
             if (!deleted) {
-                throw new AppError(404, 'Agente não encontrado.');
+                return next(new ApiError('Agente não encontrado.', 404));
             }
     
             res.status(204).send();
         } 
         catch (error) {
-            next(error);
+            return next(new ApiError(error.message, 400));
         }
 };
  

@@ -1,5 +1,5 @@
 const db = require('../db/db');
-const { AppError } = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
 
 async function findAll({ cargo, sort } = {}) {
     try {
@@ -29,7 +29,7 @@ async function findAll({ cargo, sort } = {}) {
         return await query;
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao buscar agentes.', [error.message]);
+        throw new ApiError('Erro ao buscar agentes.', 500);
     }
 }
 
@@ -38,7 +38,7 @@ async function findById(id) {
         return await db('agentes').where({ id }).first();
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao buscar agente.', [error.message]);
+        throw new ApiError('Erro ao buscar agente.', 500)
     }
 }
 
@@ -48,7 +48,7 @@ async function create(data) {
         return agente;
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao criar agente.', [error.message]);
+        throw new ApiError('Erro ao criar agente.', 500)
     }
 }
 
@@ -58,7 +58,7 @@ async function update(id, data) {
         return agente || null;
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao atualizar agente.', [error.message]);
+        throw new ApiError('Erro ao atualizar agente.', 500)
     }
 }
 
@@ -68,7 +68,7 @@ async function remove(id) {
         return deleted > 0;    
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao deletar agente.', [error.message]);
+        throw new ApiError('Erro ao deletar agente.', 500)
     }
 }
 

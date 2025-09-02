@@ -1,7 +1,8 @@
 const casosRepository = require('../repositories/casosRepository');
 const agentesRepository = require('../repositories/agentesRepository');
 const { casosSchema } = require('../utils/casosValidation');
-const { AppError } = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
+const formatZodError = require('../utils/formatZodError');
 
 const getCasos = async (req, res, next) => {
     try {
@@ -12,7 +13,7 @@ const getCasos = async (req, res, next) => {
         res.status(200).json(casos);
     }
     catch(error) {
-        next(error);
+        return next(new ApiError(error.message, 400));
     }
 }; 
 
@@ -23,13 +24,13 @@ const getCasoById = async (req, res, next) => {
         const caso = await casosRepository.findById(id);
 
         if(!caso) {
-            throw new AppError(404, 'Caso não encontrado.');
+            return next(new ApiError('Caso não encontrado.', 404));
         }
 
         res.status(200).json(caso);
     } 
     catch (error) {
-        next(error);
+        return next(new ApiError(error.message, 400));
     }
 };
 
@@ -38,9 +39,9 @@ const createCaso = async (req, res, next) => {
         const { titulo, descricao, status, agente_id } = req.body;
 
         const agenteExists = await agentesRepository.findById(agente_id);
-        
+
         if(!agenteExists) {
-            throw new AppError(404, 'Agente não encontrado.');
+            return next(new ApiError('Agente não encontrado.', 404))
         }
 
         const dataReceived = {
@@ -56,7 +57,9 @@ const createCaso = async (req, res, next) => {
         res.status(201).json(newCaso);
     } 
     catch (error) {
-        next(error);
+        if(formatZodError(error, next)) return;
+
+        return next(new ApiError(error.message));
     }
 };
 
@@ -69,19 +72,21 @@ const updateCompletelyCaso = async (req, res, next) => {
         const agenteExists = await agentesRepository.findById(data.agente_id);
         
         if(!agenteExists) {
-            throw new AppError(404, 'Agente não encontrado.');
+            return next(new ApiError('Agente não encontrado.', 404));
         }
 
         const updated = await casosRepository.update(id, data);
-        
+
         if (!updated) {
-            throw new AppError(404, 'Caso não encontrado.');
+            return next(new ApiError('Caso não encontrado.', 404));
         }
 
         res.status(200).json(updated);
     } 
     catch (error) {
-        next(error);
+        if(formatZodError(error, next)) return;
+
+        return next(new ApiError(error.message));
     }
 };
 
@@ -93,22 +98,24 @@ const partiallyUpdateCaso = async (req, res, next) => {
 
         if('agente_id' in partiallyData) {
             const agenteExists = await agentesRepository.findById(partiallyData.agente_id);
-    
+            
             if(!agenteExists) {
-                throw new AppError(404, 'Agente não encontrado.');
+                return next(new ApiError('Agente não encontrado.', 404))
             }
         }
 
         const updated = await casosRepository.update(id, partiallyData);
 
         if (!updated) {
-            throw new AppError(404, 'Caso não encontrado.');
+            return next(new ApiError('Caso não encontrado.', 404));
         }
 
         res.status(200).json(updated);
     } 
     catch (error) {
-        next(error);
+        if(formatZodError(error, next)) return;
+
+        return next(new ApiError(error.message));
     }
 };
 
@@ -119,13 +126,13 @@ const deleteCaso = async (req, res, next) => {
         const deleted = await casosRepository.remove(id);
 
         if (!deleted) {
-            throw new AppError(404, 'Caso não encontrado.');
+            return next(new ApiError('Caso não encontrado.', 404));
         }
 
         res.status(204).send();
     } 
     catch (error) {
-        next(error);
+        return next(new ApiError(error.message, 400));
     }
 };
 
@@ -136,19 +143,19 @@ const getAgenteByCasoId = async (req, res, next) => {
         const caso = await casosRepository.findById(caso_id);
         
         if(!caso) {
-            throw new AppError(404, 'Caso não encontrado.');
+            return next(new ApiError('Caso não encontrado.', 404));
         }
 
         const agente = await agentesRepository.findById(caso.agente_id);
         
         if(!agente) {
-            throw new AppError(404, 'Agente não encontrado.');
+            return next(new ApiError('Agente não encontrado.', 404));
         }
 
         res.status(200).json(agente);
     } 
     catch (error) {
-        next(error);  
+        return next(new ApiError(error.message, 400));    
     }
 };
 
@@ -161,7 +168,7 @@ const searchCasos = async (req, res, next) => {
         res.status(200).json(casos);
     }
     catch (error) {
-        next(error);
+        return next(new ApiError(error.message, 400));
     }
 }; 
 

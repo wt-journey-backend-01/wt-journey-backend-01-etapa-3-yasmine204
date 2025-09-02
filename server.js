@@ -1,7 +1,7 @@
 const express = require('express');
 const casosRouter = require('./routes/casosRoutes');
 const agentesRouter = require('./routes/agentesRoutes');
-const { errorHandler } = require('./utils/errorHandler')
+const errorHandler = require('./utils/errorHandler')
 const setupSwagger = require('./docs/swagger');
 
 const app = express();

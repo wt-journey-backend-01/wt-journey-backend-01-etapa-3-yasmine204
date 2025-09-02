@@ -1,5 +1,5 @@
 const db = require('../db/db');
-const { AppError } = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
 
 async function findAll({ agente_id, status } = {}) {
     try {
@@ -16,7 +16,7 @@ async function findAll({ agente_id, status } = {}) {
         return await query;
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao buscar casos.', [error.message]);
+        throw new ApiError('Erro ao buscar casos.', 500);
     }
 }
 
@@ -25,7 +25,7 @@ async function findById(id) {
         return await db('casos').where({ id }).first();
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao buscar caso.', [error.message]);
+        throw new ApiError('Erro ao buscar caso.', 500);
     }
 }
 
@@ -35,7 +35,7 @@ async function create(data) {
         return caso;
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao criar caso.', [error.message]);
+        throw new ApiError('Erro ao criar caso.', 500);
     }
 }
 
@@ -45,7 +45,7 @@ async function update(id, data) {
         return caso || null;   
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao atualizar caso.', [error.message]);
+        throw new ApiError('Erro ao atualizar caso.', 500);
     }
 }
 
@@ -55,7 +55,7 @@ async function remove(id) {
         return deleted > 0;
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao deletar caso.', [error.message]);
+        throw new ApiError('Erro ao deletar caso.', 500);
     }
 }
 
@@ -67,7 +67,7 @@ async function search(q) {
         .orderBy('id', 'asc');
     } 
     catch (error) {
-        throw new AppError(500, 'Erro ao buscar caso por palavra-chave.', [error.message]);
+        throw new ApiError('Erro ao buscar caso por palavra-chave.', 500);
     }
 } 
 
