@@ -1,19 +1,24 @@
-const ApiError = require('./ApiError');
-
-function errorHandler(err, req, res, next) {
-    if (err instanceof ApiError) {
-        return res.status(err.statusCode).json({
-            status: err.statusCode,
-            message: err.message,
-            errors: Array.isArray(err.errors) ? err.errors : [],
-        });
+class AppError extends Error {
+    constructor(statusCode, message, errors = []) {
+        super(message);
+        this.statusCode = statusCode;
+        this.errors = errors.map((err) => err.msg || err);
     }
-    
-    res.status(500).json({
-        status: 500,
-        message: 'Erro interno do servidor',
-        errors: [],
-    });
 }
 
-module.exports = errorHandler;
+const errorHandler = (err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Erro interno no servidor';
+    const errors = err.errors || [];
+
+    res.status(statusCode).json({
+        status: statusCode,
+        message,
+        errors
+    });
+};
+
+module.exports = {
+    errorHandler,
+    AppError
+}
