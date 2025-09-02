@@ -1,22 +1,22 @@
 <sup>Esse é um feedback gerado por IA, ele pode conter erros.</sup>
 
-Você tem 5 créditos restantes para usar o sistema de feedback AI.
+Você tem 4 créditos restantes para usar o sistema de feedback AI.
 
 # Feedback para yasmine204:
 
 Nota final: **70.1/100**
 
-# Feedback para yasmine204 🚓🚀
+# Feedback para a Yasmine204 🚓✨
 
-Olá, Yasmine! Primeiro, quero parabenizá-la pelo empenho e pela organização geral do seu projeto. 🎉 Você estruturou bem o código com rotas, controllers e repositories separados, usou o Knex.js para as operações no banco e aplicou validações com Zod, o que é excelente para garantir a qualidade dos dados! Também notei que você implementou mensagens de erro customizadas, o que é um diferencial que ajuda muito na experiência da API. 👏👏
-
-Agora, vamos juntos destrinchar alguns pontos que podem ser aprimorados para que sua API fique tinindo e entregue tudo que o desafio pede, combinado? 😉
+Olá, Yasmine! Primeiro, parabéns pelo esforço e pelo progresso que você já mostrou nessa etapa tão importante de persistência de dados com PostgreSQL e Knex.js! 🎉 Eu vi que você organizou seu projeto de forma modular, usando controllers, repositories e rotas — isso é fundamental para manter o código limpo e escalável, e você mandou bem nisso! Além disso, você implementou mensagens de erro customizadas para argumentos inválidos, o que é um diferencial muito bacana para a experiência do usuário da sua API. 👏👏
 
 ---
 
-## 1. Sobre a Estrutura do Projeto 🗂️
+## Análise Detalhada e Dicas para Avançar 🚀
 
-Sua estrutura está muito próxima do esperado, o que é ótimo! Só reforçando para você manter sempre essa organização:
+### 1. Estrutura de Diretórios — Está no caminho certo! ✔️
+
+Sua estrutura está quase perfeita e segue o padrão esperado para projetos Node.js com Knex e Express:
 
 ```
 📦 SEU-REPOSITÓRIO
@@ -47,216 +47,70 @@ Sua estrutura está muito próxima do esperado, o que é ótimo! Só reforçando
     └── errorHandler.js
 ```
 
-Sua estrutura bate com essa, parabéns! Isso ajuda demais na manutenção e escalabilidade do projeto.
+Continue assim! Essa organização vai facilitar muito a manutenção e a escalabilidade do seu projeto.
 
 ---
 
-## 2. Análise das Falhas nos Endpoints `/casos` e Filtragens 🔍
+### 2. Conexão com o Banco e Configuração do Knex — Tudo parece ok, mas atenção! ⚠️
 
-Percebi que vários testes relacionados aos endpoints de `/casos` e filtros (por status, agente, busca por keywords) não passaram. Isso indica que algo fundamental na manipulação dos dados ou nas queries SQL está faltando ou incorreto. Vamos investigar juntos.
-
-### Possível causa raiz: Falta de implementação dos filtros e endpoints específicos
-
-- No seu `casosRepository.js`, o método `findAll` aceita `{ agente_id, status }` e adiciona filtros condicionalmente, o que está correto:
+Você configurou o `knexfile.js` para usar variáveis de ambiente e apontou para o banco local (`127.0.0.1` na dev), o que está correto:
 
 ```js
-async function findAll({ agente_id, status } = {}) {
-    try {
-        const query = db('casos').select('*').orderBy('id', 'asc');
-
-        if(agente_id) {
-            query.where('agente_id', agente_id);
-        }  
-        
-        if(status) {
-            query.where('status', status);
-        }
-
-        return await query;
-    } 
-    catch (error) {
-        throw new ApiError('Erro ao buscar casos.', 500);
-    }
-}
+development: {
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    port: 5432,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+  },
+  migrations: {
+      directory: './db/migrations',
+  },
+  seeds: {
+      directory: './db/seeds',
+  },
+},
 ```
 
-Isso parece certo, mas... será que seu controller está passando esses parâmetros para o repository? Vamos olhar o `casosController.js`:
+O arquivo `db/db.js` importa essa configuração e cria a instância do Knex:
 
 ```js
-const getCasos = async (req, res, next) => {
-    try {
-        const { agente_id, status } = req.query;
+const knexConfig = require('../knexfile');
+const knex = require('knex'); 
 
-        const casos = await casosRepository.findAll({ agente_id, status });
+const nodeEnv = process.env.NODE_ENV || 'development';
+const config = knexConfig[nodeEnv]; 
 
-        res.status(200).json(casos);
-    }
-    catch(error) {
-        return next(new ApiError(error.message, 400));
-    }
-};
+const db = knex(config);
+
+module.exports = db;
 ```
 
-Aqui também está correto, você recebe os query params e passa para o repository.
+**Dica importante:** Certifique-se que o arquivo `.env` está configurado corretamente com as variáveis `POSTGRES_USER`, `POSTGRES_PASSWORD` e `POSTGRES_DB`, e que o container do Docker está rodando. Se o banco não estiver ativo ou as variáveis estiverem erradas, suas queries não vão funcionar, o que impacta diretamente as operações CRUD.
 
-**Então, por que o filtro não funciona?**
+Se ainda não fez, siga o passo a passo do seu `INSTRUCTIONS.md` para subir o banco e rodar as migrations e seeds:
 
-- Pode ser que o problema esteja no tipo ou formato dos valores recebidos. Por exemplo, se `agente_id` está vindo como string e no banco é número, pode causar problema. Mas o Knex geralmente lida bem com isso.
-
-- Outra possibilidade é que o banco não está populado ou as migrations/seeds não foram aplicadas corretamente, então não há dados para filtrar.
-
-- Além disso, você implementou o endpoint `/casos/search` para busca por keywords, que está assim:
-
-```js
-async function search(q) {
-    try {
-        return await db('casos')
-        .whereILike('titulo', `%${q}%`)
-        .orWhereILike('descricao', `%${q}%`)
-        .orderBy('id', 'asc');
-    } 
-    catch (error) {
-        throw new ApiError('Erro ao buscar caso por palavra-chave.', 500);
-    }
-} 
+```
+docker compose up
+npx knex migrate:latest
+npx knex seed:run
 ```
 
-E no controller:
-
-```js
-const searchCasos = async (req, res, next) => {
-    try {
-        const { q } = req.query;
-
-        const casos = await casosRepository.search(q);
-
-        res.status(200).json(casos);
-    }
-    catch (error) {
-        return next(new ApiError(error.message, 400));
-    }
-}; 
-```
-
-Aqui está correto também, mas pode faltar validação para o parâmetro `q`. Se `q` estiver vazio ou indefinido, o método pode retornar resultados inesperados.
-
-### Recomendação de melhoria:
-
-- Adicione validação para os parâmetros de query no controller para garantir que estejam no formato esperado.
-
-- Verifique se as migrations e seeds foram executadas corretamente para garantir que as tabelas e dados existam no banco.
-
-- Teste diretamente no banco (usando `psql` ou alguma GUI) para ver se os dados estão lá e se as queries funcionam.
+Se tiver dúvidas sobre essa configuração, recomendo fortemente este vídeo que explica como configurar PostgreSQL com Docker e conectar com Node.js:  
+👉 http://googleusercontent.com/youtube.com/docker-postgresql-node
 
 ---
 
-## 3. Sobre o Endpoint para Buscar o Agente pelo Caso (`/casos/:caso_id/agente`) ❌
+### 3. Migrations e Seeds — Verifique se as tabelas foram criadas corretamente! 🛠️
 
-O teste desse endpoint falhou, então vamos olhar o controller:
-
-```js
-const getAgenteByCasoId = async (req, res, next) => {
-    try {
-        const { caso_id } = req.params;
-
-        const caso = await casosRepository.findById(caso_id);
-        
-        if(!caso) {
-            return next(new ApiError('Caso não encontrado.', 404));
-        }
-
-        const agente = await agentesRepository.findById(caso.agente_id);
-        
-        if(!agente) {
-            return next(new ApiError('Agente não encontrado.', 404));
-        }
-
-        res.status(200).json(agente);
-    } 
-    catch (error) {
-        return next(new ApiError(error.message, 400));    
-    }
-};
-```
-
-No controller está tudo certo, você busca o caso, pega o `agente_id` e busca o agente.
-
-Agora, no `casosRepository.js`, o método `findById`:
+Você criou as migrations para as tabelas `agentes` e `casos` com os campos esperados, incluindo a chave estrangeira `agente_id` em `casos`:
 
 ```js
-async function findById(id) {
-    try {
-        return await db('casos').where({ id }).first();
-    } 
-    catch (error) {
-        throw new ApiError('Erro ao buscar caso.', 500);
-    }
-}
-```
-
-Também correto.
-
-**Ponto de atenção:** Será que o parâmetro `caso_id` está chegando corretamente? Ou será que a rota está correta?
-
-No arquivo de rotas `casosRoutes.js`:
-
-```js
-router.get('/:caso_id/agente', controller.getAgenteByCasoId);
-```
-
-Está correto.
-
-**Então, o que pode estar errado?**
-
-- Talvez o banco não tenha o caso com o `id` passado, ou o `agente_id` do caso está inválido.
-
-- Ou a migration não criou corretamente as tabelas com as constraints.
-
-### Verificação importante nas migrations
-
-O arquivo `20250818164610_solution_migrations.js`:
-
-```js
+// Exemplo da migration de 'casos'
 exports.up = function(knex) {
-    return knex.schema
-        .createTable('agentes', (table) => {
-            table.increments('id');
-            table.string('nome');
-            table.date('dataDeIncorporacao');
-            table.string('cargo');
-        })
-        .createTable('casos', table => {
-            table.increments('id');
-            table.string('titulo');
-            table.text('descricao');
-            table.enu('status', ['aberto', 'solucionado']);
-            table.integer('agente_id')
-                .unsigned()
-                .references('id')
-                .inTable('agentes')
-                .onDelete('CASCADE');
-        });
-};
-```
-
-Aqui pode estar o problema: você está criando as duas tabelas numa única cadeia de comandos `knex.schema.createTable().createTable()`. No Knex, para criar múltiplas tabelas sequencialmente, é recomendado usar `return knex.schema.createTable(...).then(() => knex.schema.createTable(...))` ou usar `async/await` para garantir que a primeira tabela seja criada antes da segunda.
-
-Do jeito que está, pode ser que o Knex tente criar as duas tabelas simultaneamente, e como `casos` depende de `agentes`, a criação da foreign key pode falhar silenciosamente.
-
-### Como corrigir?
-
-Transforme seu migration assim:
-
-```js
-exports.up = async function(knex) {
-    await knex.schema.createTable('agentes', (table) => {
-        table.increments('id');
-        table.string('nome');
-        table.date('dataDeIncorporacao');
-        table.string('cargo');
-    });
-
-    await knex.schema.createTable('casos', (table) => {
+    return knex.schema.createTable('casos', table => {
         table.increments('id');
         table.string('titulo');
         table.text('descricao');
@@ -270,38 +124,33 @@ exports.up = async function(knex) {
 };
 ```
 
-E no `down` também:
+Se as tabelas não forem criadas corretamente, isso vai impedir que os endpoints funcionem como esperado, especialmente os relacionados a `casos`.
 
-```js
-exports.down = async function(knex) {
-    await knex.schema.dropTableIfExists('casos');
-    await knex.schema.dropTableIfExists('agentes');
-};
+**Verifique no banco se as tabelas existem e possuem os campos certos.** Use o comando dentro do container Docker:
+
+```
+docker exec -it postgres_policia psql -U postgres -d policia_db
 ```
 
-Isso garante que a tabela `agentes` exista antes de criar `casos` com a foreign key.
+E depois:
+
+```sql
+\d agentes
+\d casos
+```
+
+Se algo estiver errado aqui, corrija as migrations e rode novamente.
+
+Para aprender mais sobre migrations, recomendo a documentação oficial do Knex:  
+👉 https://knexjs.org/guide/migrations.html
 
 ---
 
-## 4. Seeds e Dados Iniciais 🌱
+### 4. Repositories — Atenção ao uso do Query Builder para filtros e ordenações! 🔍
 
-Se as migrations não criaram as tabelas corretamente, os seeds também não vão funcionar direito. Isso pode explicar porque seus filtros e buscas não retornam dados.
+Você fez um bom trabalho ao criar os métodos para manipular os dados via Knex, mas percebi que alguns filtros e ordenações podem estar incompletos ou não implementados, o que impacta diretamente as funcionalidades de filtragem e busca.
 
-Verifique se você rodou as migrations e seeds na ordem correta:
-
-```bash
-docker compose up
-npx knex migrate:latest
-npx knex seed:run
-```
-
-Caso tenha dúvidas, confira o arquivo `INSTRUCTIONS.md` que você mesmo(a) colocou no projeto, está bem detalhado. 😉
-
----
-
-## 5. Sobre os Filtros Avançados e Sorting no Endpoint `/agentes` 🕵️‍♀️
-
-Você implementou o filtro por `cargo` e sorting por `dataDeIncorporacao` no `agentesRepository.js`:
+Por exemplo, no seu `agentesRepository.js`, o método `findAll` trata filtro por `cargo` e ordenação por `dataDeIncorporacao`:
 
 ```js
 if(sort) {
@@ -322,59 +171,136 @@ else {
 }
 ```
 
-Isso está correto para ordenar por `dataDeIncorporacao`, mas e se o usuário quiser ordenar por outro campo? Talvez seja interessante permitir ordenação por mais colunas, ou pelo menos documentar que só esse campo é aceito.
+**Aqui o problema é que você só aceita ordenação por `dataDeIncorporacao`.** Se o parâmetro `sort` for outro campo, ele será ignorado silenciosamente. Isso pode fazer o filtro não funcionar como esperado.
 
-Além disso, no controller `getAgentes` você repassa o parâmetro `sort` para o repository, o que é ótimo.
+No desafio, era esperado que você implementasse filtros mais completos, incluindo:
 
----
+- Filtragem de casos por `status` e `agente_id` (no `casosRepository.js`), o que você já começou, mas talvez a implementação precise de ajustes para funcionar corretamente.
 
-## 6. Sobre os Status HTTP e Tratamento de Erros 🛑
+- Filtragem de agentes por `dataDeIncorporacao` com ordenação crescente e decrescente, que parece estar parcialmente implementada.
 
-Seu tratamento de erros está muito bom, usando o middleware `errorHandler` e a classe `ApiError`. Também está retornando os status HTTP corretos (200, 201, 204, 400, 404) nos controllers, o que é essencial para uma API REST bem feita.
+Além disso, o endpoint para buscar o agente responsável por um caso (`GET /casos/:caso_id/agente`) depende muito da consulta correta no banco, que deve buscar o caso e depois o agente pelo `agente_id`. Vi que o controller está correto, mas se a query no repository de casos ou agentes não funcionar, isso quebra o fluxo.
 
-Continue assim! Isso deixa seu código profissional e amigável para quem consome a API.
+**Minha sugestão:**
 
----
+- No `agentesRepository.js`, permita ordenação por qualquer campo válido, com um fallback para `id`.
 
-## Recursos para você avançar ainda mais 🚀
+- No `casosRepository.js`, garanta que os filtros por `status` e `agente_id` sejam aplicados corretamente, e que a busca por palavra-chave (`search`) funcione usando `whereILike` com encadeamento correto.
 
-- Para garantir que as migrations criem as tabelas na ordem correta e com foreign keys funcionando, recomendo fortemente este guia oficial do Knex sobre migrations:  
-  https://knexjs.org/guide/migrations.html
+Por exemplo, para ordenar por qualquer campo com segurança, você pode fazer:
 
-- Para entender melhor como popular o banco com seeds e garantir que seus dados iniciais estejam corretos, veja este vídeo:  
-  http://googleusercontent.com/youtube.com/knex-seeds
+```js
+const validSortColumns = ['id', 'nome', 'dataDeIncorporacao', 'cargo'];
+if(sort) {
+    let direction = 'asc';
+    let column = sort;
 
-- Como você está trabalhando com filtros e query params, este vídeo explica muito bem como manipular requisições e respostas HTTP no Express.js, incluindo status codes:  
-  https://youtu.be/RSZHvQomeKE
+    if(sort.startsWith('-')) {
+        direction = 'desc';
+        column = sort.slice(1);
+    }
 
-- Caso queira aprimorar ainda mais a validação dos parâmetros de query para evitar erros silenciosos, este vídeo sobre validação em APIs Node.js com Zod é muito útil:  
-  https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_
+    if(validSortColumns.includes(column)) {
+        query.orderBy(column, direction);
+    } else {
+        query.orderBy('id', 'asc');
+    }
+} else {
+    query.orderBy('id', 'asc');
+}
+```
 
-- E para garantir que seu ambiente Docker com PostgreSQL está configurado corretamente, este tutorial pode ser um ótimo apoio:  
-  http://googleusercontent.com/youtube.com/docker-postgresql-node
+Esse ajuste vai deixar sua API mais robusta e flexível.
 
----
-
-## Resumo dos principais pontos para focar:
-
-- **Corrigir a migration para criar as tabelas `agentes` e `casos` sequencialmente**, garantindo a foreign key `agente_id` funcione sem erros.  
-- **Verificar se as migrations e seeds foram executadas corretamente** para popular o banco com dados iniciais.  
-- **Adicionar validação mais robusta para os parâmetros de query** nos controllers, principalmente para filtros e buscas.  
-- **Testar diretamente no banco** as queries para garantir que os dados estão lá e os filtros funcionam.  
-- **Manter o tratamento de erros e status HTTP corretos**, que já está bem feito!  
-- **Continuar organizando o código em módulos claros e separados**, o que você já está fazendo muito bem.  
-
----
-
-Yasmine, você está no caminho certo! 💪 Seu código mostra que você entende os conceitos fundamentais da API REST, validação, tratamento de erros e organização. Com esses ajustes na migration e atenção aos dados no banco, sua API vai funcionar perfeitamente e entregar tudo que o projeto pede.
-
-Continue firme, não desanime! Qualquer dúvida, estou aqui para ajudar. 🚀✨
-
-Um abraço virtual e bons códigos! 👩‍💻👨‍💻
+Para entender melhor o Query Builder do Knex e como montar consultas com filtros, ordenação e buscas, recomendo muito este guia:  
+👉 https://knexjs.org/guide/query-builder.html
 
 ---
 
-Se quiser, posso ajudar a revisar a migration corrigida ou qualquer outro trecho do código. Só chamar! 😉
+### 5. Validação e Tratamento de Erros — Muito bem implementado! 🎯
+
+Você usou o Zod para validar os dados de entrada e criou um middleware para tratamento de erros customizados, o que é excelente para garantir a qualidade da API.
+
+Por exemplo, no seu controller de casos:
+
+```js
+const data = casosSchema.parse(dataReceived);
+//...
+if(!agenteExists) {
+    return next(new ApiError('Agente não encontrado.', 404))
+}
+```
+
+E o uso do middleware `errorHandler` no `server.js` garante que erros sejam tratados de forma centralizada.
+
+Continue assim! Isso ajuda a API a ser mais confiável e a dar respostas claras para quem consome.
+
+Se quiser se aprofundar mais em tratamento de erros e status HTTP, recomendo esses recursos:  
+- Sobre status 400 (Bad Request): https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400  
+- Sobre status 404 (Not Found): https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/404  
+- Validação em APIs Node.js/Express: https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_
+
+---
+
+### 6. Alguns detalhes que podem estar impactando funcionalidades de filtragem e busca
+
+- O método `search` no `casosRepository.js` está usando `whereILike` e `orWhereILike` para buscar por palavra-chave no título e descrição. Isso está correto, mas certifique-se de que o parâmetro `q` está sempre definido antes de executar a query para evitar erros.
+
+- No controller `searchCasos`, você faz:
+
+```js
+const casos = await casosRepository.search(q);
+```
+
+Se `q` for vazio ou indefinido, pode gerar um comportamento inesperado. Considere validar `q` antes de chamar o repositório.
+
+- Para os filtros de casos por `status` e `agente_id` no método `findAll`, você está aplicando os filtros depois de definir o `orderBy`. Embora funcione, é mais claro aplicar filtros antes da ordenação.
+
+---
+
+## Recapitulando o que você pode focar para destravar tudo 🔑
+
+- **Verifique se o banco está rodando, as migrations foram aplicadas e os seeds executados.** Sem isso, nada funciona!  
+- **Aprimore os filtros e ordenações nos seus repositories**, garantindo que todos os campos esperados sejam contemplados e que os filtros funcionem corretamente.  
+- **Valide os parâmetros de consulta (query params) antes de usar**, para evitar erros inesperados.  
+- **Mantenha a validação e tratamento de erros que você já fez, pois está muito bem feito!**
+
+---
+
+## Resumo Rápido para você focar 👇
+
+- [ ] Confirme que o banco PostgreSQL está ativo e acessível via Docker.  
+- [ ] Rode as migrations e seeds corretamente para criar e popular as tabelas.  
+- [ ] Ajuste os métodos nos repositories para aceitar filtros e ordenações completas e corretas.  
+- [ ] Valide os parâmetros de entrada nos controllers, especialmente query params.  
+- [ ] Continue usando o Zod e middleware de erros para garantir respostas claras e consistentes.
+
+---
+
+Yasmine, você está no caminho certo e já tem uma base sólida! Só precisa ajustar esses detalhes para que todas as funcionalidades brilhem. ✨ Não desanime, persistência é parte do processo e você vai conseguir! Se precisar de ajuda, volte aqui que a gente resolve juntos! 💪🚀
+
+Continue firme e parabéns pelo trabalho até aqui! 👏😊
+
+---
+
+## Recursos recomendados para você:
+
+- Configuração de Banco de Dados com Docker e Knex:  
+  http://googleusercontent.com/youtube.com/docker-postgresql-node  
+  https://knexjs.org/guide/migrations.html  
+  https://knexjs.org/guide/query-builder.html  
+
+- Validação e Tratamento de Erros:  
+  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400  
+  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/404  
+  https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_  
+
+- Arquitetura e Boas Práticas:  
+  https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH  
+
+---
+
+Um abraço e até a próxima revisão! 🚓💻✨
 
 > Caso queira tirar uma dúvida específica, entre em contato com o Chapter no nosso [discord](https://discord.gg/DryuHVnz).
 
