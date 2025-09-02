@@ -8,12 +8,24 @@ const getCasos = async (req, res, next) => {
     try {
         const { agente_id, status } = req.query;
 
+        if(status && !['aberto', 'solucionado'].includes(status)) {
+            throw new ApiError('Parâmetros inválidos.', 400);
+        }
+
         const casos = await casosRepository.findAll({ agente_id, status });
+
+        if (status && casos.length === 0) {
+            throw new ApiError('Caso não encontrado.', 404);
+        }
+
+        if (agente_id && casos.length === 0) {
+            throw new ApiError('Caso não encontrado.', 404);
+        }
 
         res.status(200).json(casos);
     }
     catch(error) {
-        return next(new ApiError(error.message, 400));
+        next(error);
     }
 }; 
 
