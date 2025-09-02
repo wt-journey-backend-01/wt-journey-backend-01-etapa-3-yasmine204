@@ -46,7 +46,7 @@ async function findById(id) {
         }
 
         agente.dataDeIncorporacao = agente.dataDeIncorporacao
-            ? new Date(a.dataDeIncorporacao).toISOString().split('T')[0]
+            ? new Date(agente.dataDeIncorporacao).toISOString().split('T')[0]
             : null
 
         return agente;
@@ -61,7 +61,7 @@ async function create(data) {
         const [agente] = await db('agentes').insert(data).returning('*');
 
         agente.dataDeIncorporacao = agente.dataDeIncorporacao
-            ? new Date(a.dataDeIncorporacao).toISOString().split('T')[0]
+            ? new Date(agente.dataDeIncorporacao).toISOString().split('T')[0]
             : null
 
         return agente;
@@ -80,7 +80,7 @@ async function update(id, data) {
         }
         
         agente.dataDeIncorporacao = agente.dataDeIncorporacao
-            ? new Date(a.dataDeIncorporacao).toISOString().split('T')[0]
+            ? new Date(agente.dataDeIncorporacao).toISOString().split('T')[0]
             : null
 
         return agente;
