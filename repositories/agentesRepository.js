@@ -12,12 +12,14 @@ async function findAll({ cargo, sort } = {}) {
 
         if(sort) {
             let direction = 'asc';
+            let column = sort;
 
             if(sort.startsWith('-')) {
                 direction = 'desc';
+                column = sort.substring(1);
             }
 
-            query.orderBy('dataDeIncorporacao', direction);
+            query.orderBy(column, direction);
         }
         else {
             query.orderBy('id', 'asc');

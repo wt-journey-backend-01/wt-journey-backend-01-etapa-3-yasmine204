@@ -10,7 +10,7 @@ async function findAll({ agente_id, status } = {}) {
         }  
         
         if(status) {
-            query.where('status', 'ilike', status);
+            query.whereILike('status', status);
         }
 
         return await query;
@@ -59,10 +59,23 @@ async function remove(id) {
     }
 }
 
+async function search(q) {
+    try {
+        return await db('casos')
+        .whereILike('titulo', `%${q}%`)
+        .orWhereILike('descricao', `%${q}%`)
+        .orderBy('id', 'asc');
+    } 
+    catch (error) {
+        throw new ApiError('Erro ao buscar caso por palavra-chave.', 500);
+    }
+} 
+
 module.exports = {
     findAll,
     findById,
     create,
     update,
-    remove
+    remove,
+    search
 };

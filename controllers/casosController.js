@@ -160,19 +160,7 @@ const searchCasos = async (req, res, next) => {
     try {
         const { q } = req.query;
 
-        if(!q || q.trim() === '') {
-            return next(new ApiError('Parâmetro de busca q é obrigatório.', 400));
-        }
-
-        const term = normalizeText(q);
-        let casos = await casosRepository.findAll();
-
-        casos = casos.filter((caso) => {
-            const titulo = normalizeText(caso.titulo);
-            const descricao = normalizeText(caso.descricao);
-
-            return titulo.includes(term) || descricao.includes(term);
-        });
+        const casos = await casosRepository.search(q);
 
         res.status(200).json(casos);
     }
