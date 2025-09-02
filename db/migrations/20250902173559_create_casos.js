@@ -4,15 +4,16 @@
  */
 exports.up = function(knex) {
     return knex.schema.createTable('casos', table => {
-            table.increments('id');
-            table.string('titulo');
-            table.text('descricao');
-            table.enu('status', ['aberto', 'solucionado']);
+            table.increments('id').primary();
+            table.string('titulo').notNullable();
+            table.text('descricao').notNullable();
+            table.enu('status', ['aberto', 'solucionado']).notNullable();
             table.integer('agente_id')
                 .unsigned()
                 .references('id')
                 .inTable('agentes')
-                .onDelete('CASCADE');
+                .onDelete('CASCADE')
+                .notNullable();
         });
 };
 
@@ -21,6 +22,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.schema
-    .dropTableIfExists('casos');
+    return knex.schema.dropTableIfExists('casos');
 };

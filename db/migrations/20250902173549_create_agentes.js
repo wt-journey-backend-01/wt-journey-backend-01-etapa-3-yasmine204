@@ -4,10 +4,10 @@
  */
 exports.up = function(knex) {
     return knex.schema.createTable('agentes', (table) => {
-            table.increments('id');
-            table.string('nome');
-            table.date('dataDeIncorporacao');
-            table.string('cargo');
+            table.increments('id').primary();
+            table.string('nome').notNullable();
+            table.date('dataDeIncorporacao').notNullable();
+            table.string('cargo').notNullable();
         });
 };
 
@@ -16,6 +16,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.schema
-    .dropTableIfExists('agentes');
+    return knex.schema.dropTableIfExists('agentes');
 };
