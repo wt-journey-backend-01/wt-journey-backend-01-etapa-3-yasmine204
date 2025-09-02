@@ -2,14 +2,14 @@
 
 # 🧪 Relatório de Avaliação – Journey Levty Etapa 1 - yasmine204
 
-**Data:** 02/09/2025 23:43
+**Data:** 02/09/2025 23:58
 
-**Nota Final:** `78.25/100`
+**Nota Final:** `78.82/100`
 **Status:** ✅ Aprovado
 
 ---
 ## ✅ Requisitos Obrigatórios
-- Foram encontrados `8` problemas nos requisitos obrigatórios. Veja abaixo os testes que falharam:
+- Foram encontrados `9` problemas nos requisitos obrigatórios. Veja abaixo os testes que falharam:
   - ⚠️ **Falhou no teste**: `CREATE: Cria casos corretamente`
     - **Melhoria sugerida**: A criação de casos (`POST /casos`) não está como o esperado. O teste esperava um status `201 Created` e os dados do caso no corpo da resposta. Revise a lógica da sua rota de criação de casos.
   - ⚠️ **Falhou no teste**: `Lista todos os casos corretamente`
@@ -22,15 +22,19 @@
     - **Melhoria sugerida**: A atualização parcial de casos (`PATCH /casos/:id`) falhou. O teste esperava um status `200 OK` e o caso com os dados parcialmente atualizados. Verifique se sua rota está recebendo o payload parcial e aplicando as mudanças sem sobrescrever o objeto inteiro.
   - ⚠️ **Falhou no teste**: `DELETE: Deleta dados de um caso corretamente`
     - **Melhoria sugerida**: A exclusão de caso (`DELETE /casos/:id`) não funcionou como esperado. O teste esperava um status `204 No Content` e que o caso fosse realmente removido. Verifique a lógica de exclusão na sua rota.
+  - ⚠️ **Falhou no teste**: `CREATE: Recebe status code 404 ao tentar criar caso com id de agente inválido/inexistente`
+    - **Melhoria sugerida**: Ao tentar criar um caso com um `agente_id` inexistente, o teste não recebeu `404 Not Found`. Sua API deve ser capaz de identificar que o agente referenciado não existe e retornar o status apropriado.
   - ⚠️ **Falhou no teste**: `READ: Recebe status code 404 ao tentar buscar um caso por ID inválido`
     - **Melhoria sugerida**: Ao tentar buscar um caso com ID inexistente (`GET /casos/:id`), o teste não recebeu `404 Not Found`. Sua rota deve ser capaz de identificar que o recurso não existe e retornar o status apropriado.
   - ⚠️ **Falhou no teste**: `UPDATE: Recebe status code 404 ao tentar atualizar um caso por completo com método PUT de um caso inexistente`
     - **Melhoria sugerida**: Ao tentar atualizar um caso inexistente com `PUT /casos/:id`, o teste não recebeu `404 Not Found`. A rota deve indicar que o recurso não foi encontrado.
 
 ## ⭐ Itens de Destaque (recupera até 40 pontos)
-- Você conquistou `1` bônus! Excelente trabalho nos detalhes adicionais!
+- Você conquistou `2` bônus! Excelente trabalho nos detalhes adicionais!
   - 🌟 **Testes bônus passados**: `Custom Error: Estudante implementou mensagens de erro customizadas para argumentos de agente inválidos corretamente`
     - Uau! Você implementou mensagens de erro customizadas para argumentos inválidos em agentes, com status `400 Bad Request` e detalhes específicos dos campos. Isso é uma excelente prática para APIs, fornecendo feedback claro aos desenvolvedores. Parabéns!
+  - 🌟 **Testes bônus passados**: `Custom Error: Estudante implementou mensagens de erro customizadas para argumentos de caso inválidos corretamente`
+    - Excelente! As mensagens de erro customizadas para argumentos inválidos em casos estão funcionando, com status `400 Bad Request` e detalhes específicos dos campos. Isso demonstra um alto nível de atenção aos detalhes na sua API.
 
 ## ❌ Problemas Detectados (Descontos de até 100 pontos)
 - Nenhuma infração grave foi detectada. Muito bom nesse aspecto!
