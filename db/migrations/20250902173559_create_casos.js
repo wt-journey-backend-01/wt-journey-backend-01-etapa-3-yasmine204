@@ -3,14 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-    return knex.schema
-        .createTable('agentes', (table) => {
-            table.increments('id');
-            table.string('nome');
-            table.date('dataDeIncorporacao');
-            table.string('cargo');
-        })
-        .createTable('casos', table => {
+    return knex.schema.createTable('casos', table => {
             table.increments('id');
             table.string('titulo');
             table.text('descricao');
@@ -29,6 +22,5 @@ exports.up = function(knex) {
  */
 exports.down = function(knex) {
     return knex.schema
-        .dropTableIfExists('casos')
-        .dropTableIfExists('agentes');
+    .dropTableIfExists('casos');
 };
