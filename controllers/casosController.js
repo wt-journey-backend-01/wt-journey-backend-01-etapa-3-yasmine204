@@ -38,11 +38,7 @@ const createCaso = async (req, res, next) => {
     try {
         const { titulo, descricao, status, agente_id } = req.body;
 
-        const agenteExists = await agentesRepository.findById(agente_id);
-
-        if(!agenteExists) {
-            return next(new ApiError('Agente não encontrado.', 404))
-        }
+        
 
         const dataReceived = {
             titulo,
