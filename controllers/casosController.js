@@ -68,7 +68,6 @@ const updateCompletelyCaso = async (req, res, next) => {
         const { id } = req.params;
 
         const data = casosSchema.parse(req.body);
-
         const agenteExists = await agentesRepository.findById(data.agente_id);
         
         if(!agenteExists) {
