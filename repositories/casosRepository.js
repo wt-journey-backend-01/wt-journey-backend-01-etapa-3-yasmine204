@@ -6,7 +6,7 @@ async function findAll({ agente_id, status } = {}) {
         const query = db('casos').select('*');
 
         if(agente_id) {
-            query.where('agente_id', agente_id);
+            query.where('agente_id', Number(agente_id));
         }  
         
         if(status) {
