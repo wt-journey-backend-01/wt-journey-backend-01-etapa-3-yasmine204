@@ -10,7 +10,7 @@ async function findAll({ agente_id, status } = {}) {
         }  
         
         if(status) {
-            query.whereILike('status', status);
+            query.where('status', status);
         }
 
         return await query;
