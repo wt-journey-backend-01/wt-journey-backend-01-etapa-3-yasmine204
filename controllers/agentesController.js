@@ -21,7 +21,7 @@ const getAgenteById = async (req, res, next) => {
         const { id } = req.params; 
         
         const agente = await repository.findById(id);
-
+        
         if(!agente) {
             return next(new ApiError('Agente não encontrado.', 404));
         }

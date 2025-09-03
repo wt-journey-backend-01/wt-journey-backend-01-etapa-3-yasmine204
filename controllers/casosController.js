@@ -19,7 +19,7 @@ const getCasos = async (req, res, next) => {
 
 const getCasoById = async (req, res, next) => {
     try {
-        const id = Numer(req.params.id);
+        const { id } = req.params;
 
         const caso = await casosRepository.findById(id);
         
