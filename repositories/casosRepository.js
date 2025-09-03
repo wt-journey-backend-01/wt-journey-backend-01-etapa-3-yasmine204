@@ -22,7 +22,13 @@ async function findAll({ agente_id, status } = {}) {
 
 async function findById(id) {
     try {
-        return await db('casos').where({ id }).first();
+        const caso = await db('casos').where({ id }).first();
+
+        if(!caso) {
+            return null;
+        }
+
+        return caso;
     } 
     catch (error) {
         throw new ApiError('Erro ao buscar caso.', 500);
