@@ -5,13 +5,7 @@ async function findAll({ agente_id, status } = {}) {
     try {
         const query = db('casos').select('*');
 
-        if(agente_id) {
-            query.where('agente_id', Number(agente_id));
-        }  
         
-        if(status) {
-            query.where('status', status);
-        }
 
         return await query.orderBy('id', 'asc');
     } 

@@ -8,7 +8,7 @@ const getCasos = async (req, res, next) => {
     try {
         const { agente_id, status } = req.query;
 
-        const casos = await casosRepository.findAll({ agente_id, status });
+        const casos = await casosRepository.findAll({  });
 
         res.status(200).json(casos);
     }
