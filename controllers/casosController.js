@@ -38,6 +38,12 @@ const createCaso = async (req, res, next) => {
     try {
         const { titulo, descricao, status, agente_id } = req.body;
 
+        const agenteExists = await agentesRepository.findById(agente_id);
+
+        if(!agenteExists) {
+            return next(new ApiError('Agente não encontrado.', 404))
+        }
+
         const dataReceived = {
             titulo,
             descricao,
@@ -62,7 +68,11 @@ const updateCompletelyCaso = async (req, res, next) => {
         const { id } = req.params;
 
         const data = casosSchema.parse(req.body);
+        const agenteExists = await agentesRepository.findById(data.agente_id);
         
+        if(!agenteExists) {
+            return next(new ApiError('Agente não encontrado.', 404));
+        }
 
         const updated = await casosRepository.update(id, data);
 
@@ -83,7 +93,15 @@ const partiallyUpdateCaso = async (req, res, next) => {
     try {
         const { id } = req.params;
 
-    
+        const partiallyData = casosSchema.partial().parse(req.body);
+
+        if('agente_id' in partiallyData) {
+            const agenteExists = await agentesRepository.findById(partiallyData.agente_id);
+            
+            if(!agenteExists) {
+                return next(new ApiError('Agente não encontrado.', 404))
+            }
+        }
 
         const updated = await casosRepository.update(id, partiallyData);
 
