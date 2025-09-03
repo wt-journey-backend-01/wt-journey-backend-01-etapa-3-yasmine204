@@ -2,14 +2,14 @@
 
 # 🧪 Relatório de Avaliação – Journey Levty Etapa 1 - yasmine204
 
-**Data:** 02/09/2025 23:58
+**Data:** 03/09/2025 00:08
 
-**Nota Final:** `78.82/100`
+**Nota Final:** `76.09/100`
 **Status:** ✅ Aprovado
 
 ---
 ## ✅ Requisitos Obrigatórios
-- Foram encontrados `9` problemas nos requisitos obrigatórios. Veja abaixo os testes que falharam:
+- Foram encontrados `10` problemas nos requisitos obrigatórios. Veja abaixo os testes que falharam:
   - ⚠️ **Falhou no teste**: `CREATE: Cria casos corretamente`
     - **Melhoria sugerida**: A criação de casos (`POST /casos`) não está como o esperado. O teste esperava um status `201 Created` e os dados do caso no corpo da resposta. Revise a lógica da sua rota de criação de casos.
   - ⚠️ **Falhou no teste**: `Lista todos os casos corretamente`
@@ -28,6 +28,8 @@
     - **Melhoria sugerida**: Ao tentar buscar um caso com ID inexistente (`GET /casos/:id`), o teste não recebeu `404 Not Found`. Sua rota deve ser capaz de identificar que o recurso não existe e retornar o status apropriado.
   - ⚠️ **Falhou no teste**: `UPDATE: Recebe status code 404 ao tentar atualizar um caso por completo com método PUT de um caso inexistente`
     - **Melhoria sugerida**: Ao tentar atualizar um caso inexistente com `PUT /casos/:id`, o teste não recebeu `404 Not Found`. A rota deve indicar que o recurso não foi encontrado.
+  - ⚠️ **Falhou no teste**: `UPDATE: Recebe status code 404 ao tentar atualizar um caso parcialmente com método PATCH de um caso inexistente`
+    - **Melhoria sugerida**: Ao tentar atualizar um caso inexistente com `PATCH /casos/:id`, o teste não recebeu `404 Not Found`. Certifique-se de que sua rota verifica a existência do recurso antes de tentar a atualização.
 
 ## ⭐ Itens de Destaque (recupera até 40 pontos)
 - Você conquistou `2` bônus! Excelente trabalho nos detalhes adicionais!
