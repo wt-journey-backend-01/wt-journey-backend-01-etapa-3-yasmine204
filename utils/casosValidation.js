@@ -12,7 +12,10 @@ const casosSchema = z.object({
     }),
 
     agente_id: z
-    .string({ required_error: "O campo 'agente_id' é obrigatório." })
+    .number({
+        required_error: "O campo 'agente_id' é obrigatório.",
+        invalid_type_error: "O campo 'agente_id' deve ser um número inteiro."
+    })
 }).strict();
 
 module.exports = { casosSchema };                                                                                                                                                                                                                                                                         
