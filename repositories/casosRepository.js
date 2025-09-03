@@ -21,7 +21,7 @@ async function findAll({ agente_id, status } = {}) {
 }
 
 async function findById(id) {
-    try {
+    try { 
         const caso = await db('casos').where({ id }).first();
 
         if(!caso) {

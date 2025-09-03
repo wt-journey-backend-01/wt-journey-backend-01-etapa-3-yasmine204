@@ -40,7 +40,7 @@ async function findAll({ cargo, sort } = {}) {
 async function findById(id) {
     try {
         const agente = await db('agentes').where({ id }).first();
-
+        
         if(!agente) {
             return null;
         }

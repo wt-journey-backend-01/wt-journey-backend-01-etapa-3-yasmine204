@@ -22,7 +22,7 @@ const getCasoById = async (req, res, next) => {
         const { id } = req.params;
 
         const caso = await casosRepository.findById(id);
-
+        
         if(!caso) {
             return next(new ApiError('Caso não encontrado.', 404));
         }
