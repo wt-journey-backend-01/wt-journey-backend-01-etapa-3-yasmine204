@@ -30,7 +30,7 @@ const getCasoById = async (req, res, next) => {
         res.status(200).json(caso);
     } 
     catch (error) {
-        return next(new ApiError(error.message, 400));
+        next(error);
     }
 };
 
