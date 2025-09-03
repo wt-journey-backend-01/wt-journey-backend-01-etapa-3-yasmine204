@@ -19,7 +19,7 @@ const getCasos = async (req, res, next) => {
 
 const getCasoById = async (req, res, next) => {
     try {
-        const { id } = req.params;
+        const id = Numer(req.params.id);
 
         const caso = await casosRepository.findById(id);
         
@@ -30,7 +30,7 @@ const getCasoById = async (req, res, next) => {
         res.status(200).json(caso);
     } 
     catch (error) {
-        next(error);
+        return next(new ApiError(error.message, 400));
     }
 };
 
