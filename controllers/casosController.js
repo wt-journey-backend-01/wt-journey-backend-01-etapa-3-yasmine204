@@ -19,7 +19,11 @@ const getCasos = async (req, res, next) => {
 
 const getCasoById = async (req, res, next) => {
     try {
-        const id = Number(req.params.id);
+        const { id } = req.params;
+
+        if (!/^\d+$/.test(id)) {
+            return next(new ApiError('ID inválido.', 404));
+        }
 
         const caso = await casosRepository.findById(id);
         
