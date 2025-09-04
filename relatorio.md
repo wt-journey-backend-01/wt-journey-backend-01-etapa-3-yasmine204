@@ -2,16 +2,14 @@
 
 # 🧪 Relatório de Avaliação – Journey Levty Etapa 1 - yasmine204
 
-**Data:** 03/09/2025 01:47
+**Data:** 04/09/2025 17:58
 
-**Nota Final:** `97.40/100`
+**Nota Final:** `100.00/100`
 **Status:** ✅ Aprovado
 
 ---
 ## ✅ Requisitos Obrigatórios
-- Foram encontrados `1` problemas nos requisitos obrigatórios. Veja abaixo os testes que falharam:
-  - ⚠️ **Falhou no teste**: `READ: Recebe status code 404 ao tentar buscar um caso por ID inválido`
-    - **Melhoria sugerida**: Ao tentar buscar um caso com ID inexistente (`GET /casos/:id`), o teste não recebeu `404 Not Found`. Sua rota deve ser capaz de identificar que o recurso não existe e retornar o status apropriado.
+- Todos os requisitos básicos foram atendidos. Excelente trabalho!
 
 ## ⭐ Itens de Destaque (recupera até 40 pontos)
 - Você conquistou `3` bônus! Excelente trabalho nos detalhes adicionais!
